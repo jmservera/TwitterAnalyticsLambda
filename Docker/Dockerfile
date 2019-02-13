@@ -5,10 +5,18 @@ RUN pip install -r /ingest/requirements.txt
 
 COPY /TweetIngest/. /ingest/
 
-EXPOSE 80
+# ssh
+ENV SSH_PASSWD "root:Docker!"
+RUN apt-get update \
+        && apt-get install -y --no-install-recommends dialog \
+        && apt-get update \
+	&& apt-get install -y --no-install-recommends openssh-server \
+	&& echo "$SSH_PASSWD" | chpasswd 
 
-WORKDIR /ingest
+COPY /WebApp/sshd_config /etc/ssh/
+COPY /WebApp/init.sh /usr/local/bin/
+RUN chmod u+x /usr/local/bin/init.sh
 
-CMD python main.py
+EXPOSE 80 2222
 
-
+ENTRYPOINT ["init.sh"]
