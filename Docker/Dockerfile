@@ -5,6 +5,10 @@ RUN pip install -r /ingest/requirements.txt
 
 COPY /TweetIngest/. /ingest/
 
-CMD python /ingest/main.py
+EXPOSE 80
+
+WORKDIR /ingest
+
+CMD python main.py
 
 
