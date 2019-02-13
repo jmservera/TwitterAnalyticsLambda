@@ -1,0 +1,12 @@
+WITH tweetscore as (
+SELECT id,sentiment(text) as result, CREATED_AT
+from tweets
+TIMESTAMP BY CREATED_AT)
+
+select min(CREATED_AT) as [time], result.[Sentiment], COUNT(*) as Sentiment_Count
+INTO
+    [pbitweets]
+FROM
+    [tweetscore]
+GROUP BY TUMBLINGWINDOW(second,20), result.[Sentiment]
+

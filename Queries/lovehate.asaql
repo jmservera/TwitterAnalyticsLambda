@@ -1,0 +1,17 @@
+SELECT
+    min(CREATED_AT) as [time], 'LOVE' as theme,COUNT(*) as [tweetcount]
+INTO
+    [pbitweets]
+FROM
+    [tweets]
+TIMESTAMP BY CREATED_AT
+WHERE CHARINDEX('love',TEXT)>0
+GROUP BY TUMBLINGWINDOW(second,20)
+UNION
+SELECT
+    min(CREATED_AT) as [time], 'HATE' as theme,COUNT(*) as [tweetcount]
+FROM
+    [tweets]
+TIMESTAMP BY CREATED_AT
+WHERE CHARINDEX('hate',TEXT)>0
+GROUP BY TUMBLINGWINDOW(second,20)
