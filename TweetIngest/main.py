@@ -7,7 +7,7 @@ import threading
 
 
 
-httpd=webapp.HTTPServer(('localhost',Settings.WEB_PORT),webapp.web_server)
+httpd=webapp.HTTPServer(('0.0.0.0',Settings.WEB_PORT),webapp.web_server)
 thread= threading.Thread(target= httpd.serve_forever)
 thread.daemon=True
 thread.start()
