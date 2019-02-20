@@ -1,0 +1,55 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "solutionName": {
+           "type": "string",
+           "metadata": {
+                "description": "the name of the solution, used as base for many other strings.",
+            },
+            "minLength":2,
+            "maxLength":15
+            },
+            "web_sku":{
+                "type":"string",
+                "defaultValue":"B1",
+                "metadata":{
+                    "description":"The SKU for the web app server"
+                },
+                "allowedValues": ["B1","B2","B3","S1","S2","S3","P1V2","P2V2","P3V2"]
+            }
+        },
+    "variables": {
+        "solution_unique_name":"[toLower(concat(parameters('solutionName'),guid(resourceGroup().id,deployment().name)))]",
+        "service_plan_name":"[concat(variables('solution_unique_name'),'_farm')]",
+        "web_name":"[concat(variables('solution_unique_name'),'_web')]"
+    },
+    "resources": [
+        {
+            "comments": "Generalized from resource: '/subscriptions/f19b7695-9685-461e-9700-2d9674197593/resourceGroups/Eurostar/providers/Microsoft.Web/serverfarms/eurostaringestplan'.",
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "[parameters('web_sku')]"
+            },
+            "kind": "linux",
+            "name": "[variables('service_plan_name')]",
+            "apiVersion": "2016-09-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "kind": "app,linux,container",
+            "apiVersion": "2016-08-01",
+            "name": "[variables('web_name')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Web/serverfarms/',variables('service_plan_name'))]"
+            ],
+            "properties": {
+                "serverFarmId": "[concat('Microsoft.Web/serverfarms/',variables('service_plan_name'))]"
+            }
+        }
+    ],
+    "outputs": {}
+}
